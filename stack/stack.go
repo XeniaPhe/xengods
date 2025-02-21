@@ -11,6 +11,7 @@ type IStack[T any] interface {
 	Pop() (T, error)
 	Peek() (T, error)
 	Clear()
+	IsEmpty() bool
 	Size() int
 	Capacity() int
 	fmt.Stringer
@@ -59,6 +60,10 @@ func (s stack[T]) Peek() (T, error) {
 
 func (s stack[T]) Clear() {
 	*s.slice = (*s.slice)[:0]
+}
+
+func (s stack[T]) IsEmpty() bool {
+	return len(*s.slice) == 0
 }
 
 func (s stack[T]) Size() int {

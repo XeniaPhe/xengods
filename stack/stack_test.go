@@ -129,3 +129,17 @@ func TestStackString(t *testing.T) {
 		t.Errorf("Expected 'Stack[1, 2]', got %s instead", s.String())
 	}
 }
+
+func TestStackIsEmpty(t *testing.T) {
+	s := New[int]()
+
+	if !s.IsEmpty() {
+		t.Errorf("Expected true, got false instead")
+	}
+
+	s.Push(1)
+
+	if s.IsEmpty() {
+		t.Errorf("Expected false, got true instead")
+	}
+}
