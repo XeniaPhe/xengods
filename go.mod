@@ -1,3 +1,3 @@
-module module github.com/XeniaPhe/xengods
+module github.com/XeniaPhe/xengods
 
 go 1.24.0
