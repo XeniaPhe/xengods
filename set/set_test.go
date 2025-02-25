@@ -5,19 +5,19 @@ import "testing"
 func TestSetConstructors(t *testing.T) {
 	var uninitialized Set[int]
 
-	if uninitialized.initialized || uninitialized.IsInitialized() {
+	if uninitialized.IsInitialized() {
 		t.Error("Expected false, got true")
 	}
 
 	uninitialized.InitializeIfNot()
 
-	if !uninitialized.initialized || !uninitialized.IsInitialized() {
+	if !uninitialized.IsInitialized() {
 		t.Error("Expected true, got false")
 	}
 
 	s := New[int]()
 
-	if !s.initialized || !s.IsInitialized() {
+	if !s.IsInitialized() {
 		t.Error("Expected true, got false")
 	}
 
@@ -27,7 +27,7 @@ func TestSetConstructors(t *testing.T) {
 
 	set := Of(1, 2, 3, 4, 5)
 
-	if !set.initialized || !set.IsInitialized() {
+	if !set.IsInitialized() {
 		t.Error("Expected true, got false")
 	}
 
