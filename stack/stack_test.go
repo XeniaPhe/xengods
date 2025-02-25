@@ -4,8 +4,12 @@ import (
 	"testing"
 )
 
-func TestStackConstructor(t *testing.T) {
+func TestStackConstructors(t *testing.T) {
 	s := New[int]()
+
+	if s == nil {
+		t.Fatal("Stack is nil")
+	}
 
 	if s.Size() != 0 {
 		t.Errorf("Expected size 0, got %d instead", s.Size())
@@ -24,9 +28,27 @@ func TestStackConstructor(t *testing.T) {
 	if st.Capacity() != 100 {
 		t.Errorf("Expected capacity 100, got %d instead", st.Capacity())
 	}
+
+	sta := Of[uint](1, 2, 3, 4, 5)
+
+	if sta == nil {
+		t.Fatal("Stack is nil")
+	}
+
+	if sta.Size() != 5 {
+		t.Errorf("Expected size 5, got %d instead", sta.Size())
+	}
+
+	if sta.Capacity() != 5 {
+		t.Errorf("Expected capacity 5, got %d instead", sta.Capacity())
+	}
+
+	if sta.String() != "Stack[1, 2, 3, 4, 5]" {
+		t.Errorf("Expected '%s', got '%s' instead", "Stack[1, 2, 3, 4, 5]", sta.String())
+	}
 }
 
-func TestPushPopPeek(t *testing.T) {
+func TestStackPushPopPeek(t *testing.T) {
 	s := New[int]()
 
 	_, err := s.Peek()
