@@ -3,13 +3,33 @@ package set
 import "testing"
 
 func TestSetConstructors(t *testing.T) {
+	var uninitialized Set[int]
+
+	if uninitialized.initialized || uninitialized.IsInitialized() {
+		t.Error("Expected false, got true")
+	}
+
+	uninitialized.InitializeIfNot()
+
+	if !uninitialized.initialized || !uninitialized.IsInitialized() {
+		t.Error("Expected true, got false")
+	}
+
 	s := New[int]()
+
+	if !s.initialized || !s.IsInitialized() {
+		t.Error("Expected true, got false")
+	}
 
 	if s.Size() != 0 {
 		t.Errorf("Expected size 0, got %d instead", s.Size())
 	}
 
 	set := Of(1, 2, 3, 4, 5)
+
+	if !set.initialized || !set.IsInitialized() {
+		t.Error("Expected true, got false")
+	}
 
 	if set.Size() != 5 {
 		t.Errorf("Expected size 5, got %d instead", set.Size())

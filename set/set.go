@@ -7,14 +7,15 @@ import (
 
 type Set[T comparable] struct {
 	set map[T]struct{}
+	initialized bool
 }
 
 func New[T comparable]() Set[T] {
-	return Set[T]{make(map[T]struct{})}
+	return Set[T]{make(map[T]struct{}), true}
 }
 
 func Of[T comparable](values ...T) Set[T] {
-	set := Set[T]{make(map[T]struct{})}
+	set := Set[T]{make(map[T]struct{}), true}
 
 	for _, val := range values {
 		set.Add(val)
@@ -29,6 +30,17 @@ func orderBySize[T comparable](lhs Set[T], rhs Set[T]) (Set[T], Set[T]) {
 	}
 
 	return rhs, lhs
+}
+
+func (s Set[T]) IsInitialized() bool {
+	return s.initialized
+}
+
+func (s *Set[T]) InitializeIfNot() {
+	if !s.initialized {
+		s.set = make(map[T]struct{})
+		s.initialized = true
+	}
 }
 
 func (s Set[T]) Add(value T) {
@@ -49,7 +61,7 @@ func (s Set[T]) Size() int {
 }
 
 func (s Set[T]) Union(other Set[T]) Set[T] {
-	union := Set[T]{make(map[T]struct{})}
+	union := Set[T]{make(map[T]struct{}), true}
 
 	for val := range s.set {
 		union.set[val] = struct{}{}
@@ -70,7 +82,7 @@ func (s Set[T]) UnionWith(other Set[T]) {
 
 func (s Set[T]) Intersection(other Set[T]) Set[T] {
 	smaller, bigger := orderBySize(s, other)
-	intersection := Set[T]{make(map[T]struct{})}
+	intersection := Set[T]{make(map[T]struct{}), true}
 
 	for val := range smaller.set {
 		if bigger.Contains(val) {
@@ -96,7 +108,7 @@ func (s Set[T]) IntersectWith(other Set[T]) {
 }
 
 func (s Set[T]) Except(other Set[T]) Set[T] {
-	except := Set[T]{make(map[T]struct{})}
+	except := Set[T]{make(map[T]struct{}), true}
 
 	for val := range s.set {
 		if !other.Contains(val) {
