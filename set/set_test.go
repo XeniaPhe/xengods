@@ -40,6 +40,12 @@ func TestSetConstructors(t *testing.T) {
 	if !containsAll {
 		t.Error("Set does not contain all the elements it should have contained")
 	}
+
+	set.Clear()
+
+	if set.Size() != 0 {
+		t.Errorf("Expected size 0, got %d instead", set.Size())
+	}
 }
 
 func TestSetAddRemoveContainsSize(t *testing.T) {

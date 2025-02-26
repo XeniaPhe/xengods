@@ -41,6 +41,10 @@ func (s *Set[T]) InitializeIfNot() {
 	}
 }
 
+func (s *Set[T]) Clear() {
+	s.set = make(map[T]struct{})
+}
+
 func (s Set[T]) GetRawSet() map[T]struct{} {
 	return s.set
 }
