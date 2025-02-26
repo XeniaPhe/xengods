@@ -64,7 +64,7 @@ func TestSetConstructors(t *testing.T) {
 	}
 }
 
-func TestSetAddRemoveContainsSize(t *testing.T) {
+func TestSetAddRemovePopOneContainsSize(t *testing.T) {
 	s := New[int]()
 	s.Add(5)
 
@@ -87,6 +87,39 @@ func TestSetAddRemoveContainsSize(t *testing.T) {
 
 	if s.Size() != 3 {
 		t.Errorf("Expected size 3, got %d instead", s.Size())
+	}
+
+	clone := s.Clone()
+	val := s.PopOne()
+
+	if s.Size() != 2 {
+		t.Errorf("Expected size 2, got %d instead", s.Size())
+	}
+
+	if !clone.Contains(val) {
+		t.Errorf("Set does not contain expected item: %d", val)
+	}
+
+	clone.Remove(val)
+	val = s.PopOne()
+
+	if s.Size() != 1 {
+		t.Errorf("Expected size 1, got %d instead", s.Size())
+	}
+
+	if !clone.Contains(val) {
+		t.Errorf("Set does not contain expected item: %d", val)
+	}
+
+	clone.Remove(val)
+	val = s.PopOne()
+
+	if s.Size() != 0 {
+		t.Errorf("Expected size 0, got %d instead", s.Size())
+	}
+
+	if !clone.Contains(val) {
+		t.Errorf("Set does not contain expected item: %d", val)
 	}
 }
 

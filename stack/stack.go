@@ -43,7 +43,8 @@ func (s *Stack[T]) Pop() (T, error) {
 	l := len(*s)
 
 	if l == 0 {
-		return *new(T), emptyStackError
+		var zero T
+		return zero, emptyStackError
 	}
 
 	res := (*s)[l-1]
@@ -55,7 +56,8 @@ func (s Stack[T]) Peek() (T, error) {
 	l := len(s)
 
 	if l == 0 {
-		return *new(T), emptyStackError
+		var zero T
+		return zero, emptyStackError
 	}
 
 	res := s[l-1]

@@ -41,7 +41,7 @@ func (s Set[T]) Clone() Set[T] {
 	clone := Set[T]{make(map[T]struct{})}
 
 	for val := range s.set {
-		clone.Add(val)
+		clone.set[val] = struct{}{}
 	}
 
 	return clone
@@ -65,6 +65,16 @@ func (s Set[T]) Add(value T) {
 
 func (s Set[T]) Remove(value T) {
 	delete(s.set, value)
+}
+
+func (s Set[T]) PopOne() T {
+	for val := range s.set {
+		delete(s.set, val)
+		return val
+	}
+
+	var zero T
+	return zero
 }
 
 func (s Set[T]) Contains(value T) bool {
