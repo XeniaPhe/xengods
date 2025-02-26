@@ -23,14 +23,6 @@ func Of[T comparable](values ...T) Set[T] {
 	return set
 }
 
-func orderBySize[T comparable](lhs Set[T], rhs Set[T]) (Set[T], Set[T]) {
-	if len(lhs.set) <= len(rhs.set) {
-		return lhs, rhs
-	}
-
-	return rhs, lhs
-}
-
 func (s Set[T]) IsInitialized() bool {
 	return s.set != nil
 }
@@ -43,6 +35,24 @@ func (s *Set[T]) InitializeIfNot() {
 
 func (s *Set[T]) Clear() {
 	s.set = make(map[T]struct{})
+}
+
+func (s Set[T]) Clone() Set[T] {
+	clone := Set[T]{make(map[T]struct{})}
+
+	for val := range s.set {
+		clone.Add(val)
+	}
+
+	return clone
+}
+
+func orderBySize[T comparable](lhs Set[T], rhs Set[T]) (Set[T], Set[T]) {
+	if len(lhs.set) <= len(rhs.set) {
+		return lhs, rhs
+	}
+
+	return rhs, lhs
 }
 
 func (s Set[T]) GetRawSet() map[T]struct{} {

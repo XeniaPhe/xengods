@@ -41,6 +41,22 @@ func TestSetConstructors(t *testing.T) {
 		t.Error("Set does not contain all the elements it should have contained")
 	}
 
+	clone := set.Clone()
+
+	if !clone.IsInitialized() {
+		t.Error("Expected true, got false")
+	}
+
+	if clone.Size() != 5 {
+		t.Errorf("Expected size 5, got %d instead", clone.Size())
+	}
+
+	containsAll = clone.Contains(1) && clone.Contains(2) && clone.Contains(3) && clone.Contains(4) && clone.Contains(5)
+
+	if !containsAll {
+		t.Error("Set does not contain all the elements it should have contained")
+	}
+
 	set.Clear()
 
 	if set.Size() != 0 {
