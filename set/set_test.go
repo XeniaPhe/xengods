@@ -25,6 +25,16 @@ func TestSetConstructors(t *testing.T) {
 		t.Errorf("Expected size 0, got %d instead", s.Size())
 	}
 
+	sh := New[int](10)
+
+	if !sh.IsInitialized() {
+		t.Error("Expected true, got false")
+	}
+
+	if sh.Size() != 0 {
+		t.Errorf("Expected size 0, got %d instead", sh.Size())
+	}
+
 	set := Of(1, 2, 3, 4, 5)
 
 	if !set.IsInitialized() {

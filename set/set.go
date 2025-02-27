@@ -9,12 +9,18 @@ type Set[T comparable] struct {
 	set map[T]struct{}
 }
 
-func New[T comparable]() Set[T] {
-	return Set[T]{make(map[T]struct{})}
+func New[T comparable](size ...int) Set[T] {
+	sizeHint := 0
+
+	if len(size) > 0 {
+		sizeHint = size[0]
+	}
+
+	return Set[T]{make(map[T]struct{}, sizeHint)}
 }
 
 func Of[T comparable](values ...T) Set[T] {
-	set := Set[T]{make(map[T]struct{})}
+	set := New[T](len(values))
 
 	for _, val := range values {
 		set.Add(val)
@@ -38,7 +44,7 @@ func (s *Set[T]) Clear() {
 }
 
 func (s Set[T]) Clone() Set[T] {
-	clone := Set[T]{make(map[T]struct{})}
+	clone := New[T](len(s.set))
 
 	for val := range s.set {
 		clone.set[val] = struct{}{}
@@ -87,7 +93,9 @@ func (s Set[T]) Size() int {
 }
 
 func (s Set[T]) Union(other Set[T]) Set[T] {
-	union := Set[T]{make(map[T]struct{})}
+	smaller, bigger := orderBySize(s, other)
+	sizeHint := len(bigger.set) + len(smaller.set) / 2
+	union := New[T](sizeHint)
 
 	for val := range s.set {
 		union.set[val] = struct{}{}
@@ -108,7 +116,8 @@ func (s Set[T]) UnionWith(other Set[T]) {
 
 func (s Set[T]) Intersection(other Set[T]) Set[T] {
 	smaller, bigger := orderBySize(s, other)
-	intersection := Set[T]{make(map[T]struct{})}
+	sizeHint := len(smaller.set) / 2
+	intersection := New[T](sizeHint)
 
 	for val := range smaller.set {
 		if bigger.Contains(val) {
@@ -120,7 +129,9 @@ func (s Set[T]) Intersection(other Set[T]) Set[T] {
 }
 
 func (s Set[T]) IntersectWith(other Set[T]) {
-	marked := make([]T, 0)
+	smaller, _ := orderBySize(s, other)
+	sizeHint := len(smaller.set) / 2
+	marked := make([]T, 0, sizeHint)
 
 	for val := range s.set {
 		if !other.Contains(val) {
@@ -134,7 +145,9 @@ func (s Set[T]) IntersectWith(other Set[T]) {
 }
 
 func (s Set[T]) Except(other Set[T]) Set[T] {
-	except := Set[T]{make(map[T]struct{})}
+	smaller, _ := orderBySize(s, other)
+	sizeHint := len(smaller.set) / 2
+	except := New[T](sizeHint)
 
 	for val := range s.set {
 		if !other.Contains(val) {
@@ -146,7 +159,9 @@ func (s Set[T]) Except(other Set[T]) Set[T] {
 }
 
 func (s Set[T]) ExceptWith(other Set[T]) {
-	marked := make([]T, 0)
+	smaller, _ := orderBySize(s, other)
+	sizeHint := len(smaller.set) / 2
+	marked := make([]T, 0, sizeHint)
 
 	for val := range s.set {
 		if other.Contains(val) {
