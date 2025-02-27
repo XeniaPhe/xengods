@@ -284,6 +284,55 @@ func TestSetExcept(t *testing.T) {
 	}
 }
 
+func TestSetSymmetricExcept(t *testing.T) {
+	set1 := Of(1, 2, 3)
+	set2 := Of(2, 3, 4)
+
+	set3 := set1.SymmetricExcept(set2)
+
+	if set3.Size() != 2 {
+		t.Errorf("Expected size 2, got %s instead", set3.String())
+	}
+
+	if !set3.Contains(1) || !set3.Contains(4) {
+		t.Error("Set does not contain all the elements it should have contained")
+	}
+
+	if set1.Size() != 3 {
+		t.Errorf("Expected size 3, got %d instead", set1.Size())
+	}
+	
+	if set2.Size() != 3 {
+		t.Errorf("Expected size 3, got %d instead", set2.Size())
+	}
+
+	if !set1.Contains(1) || !set1.Contains(2) || !set1.Contains(3) {
+		t.Error("Set does not contain all the elements it should have contained")
+	}
+
+	if !set2.Contains(2) || !set2.Contains(3) || !set2.Contains(4) {
+		t.Error("Set does not contain all the elements it should have contained")
+	}
+
+	set1.SymmetricExceptWith(set2)
+
+	if set1.Size() != 2 {
+		t.Errorf("Expected size 2, got %d instead", set1.Size())
+	}
+
+	if !set1.Contains(1) || !set1.Contains(4) {
+		t.Error("Set does not contain all the elements it should have contained")
+	}
+
+	if set2.Size() != 3 {
+		t.Errorf("Expected size 3, got %d instead", set2.Size())
+	}
+
+	if !set2.Contains(2) || !set2.Contains(3) || !set2.Contains(4) {
+		t.Error("Set does not contain all the elements it should have contained")
+	}
+}
+
 func TestSetOverlaps(t *testing.T) {
 	set1 := Of(1, 2, 3)
 	set2 := Of(4, 5, 6)
@@ -311,6 +360,39 @@ func TestSetOverlaps(t *testing.T) {
 
 	if !set3.Overlaps(set2) {
 		t.Error("Expected true, got false")
+	}
+}
+
+func TestSetEquals(t *testing.T) {
+	set1 := Of(1, 2, 3, 4, 5)
+	set2 := Of(1, 2, 3, 4, 5)
+
+	if !set1.SetEquals(set2) {
+		t.Error("Expected true, got false")
+	}
+
+	if !set2.SetEquals(set1) {
+		t.Error("Expected true, got false")
+	}
+
+	set2.Remove(5)
+
+	if set1.SetEquals(set2) {
+		t.Error("Expected false, got true")
+	}
+
+	if set2.SetEquals(set1) {
+		t.Error("Expected false, got true")
+	}
+
+	set1.Remove(1)
+
+	if set1.SetEquals(set2) {
+		t.Error("Expected false, got true")
+	}
+
+	if set2.SetEquals(set1) {
+		t.Error("Expected false, got true")
 	}
 }
 
@@ -381,5 +463,18 @@ func TestSetSubsetSuperset(t *testing.T) {
 
 	if !set3.IsProperSupersetOf(set1) {
 		t.Error("Expected true, got false")
+	}
+}
+
+func TestSetToSlice(t *testing.T) {
+	set := Of(1, 2, 3)
+	slice := set.ToSlice()
+
+	for _, val := range slice {
+		set.Remove(val)
+	}
+
+	if set.Size() != 0 {
+		t.Errorf("Expected size 0, got %d instead", set.Size())
 	}
 }

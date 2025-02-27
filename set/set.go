@@ -29,6 +29,14 @@ func Of[T comparable](values ...T) Set[T] {
 	return set
 }
 
+func orderBySize[T comparable](lhs Set[T], rhs Set[T]) (Set[T], Set[T]) {
+	if len(lhs.set) <= len(rhs.set) {
+		return lhs, rhs
+	}
+
+	return rhs, lhs
+}
+
 func (s Set[T]) IsInitialized() bool {
 	return s.set != nil
 }
@@ -51,14 +59,6 @@ func (s Set[T]) Clone() Set[T] {
 	}
 
 	return clone
-}
-
-func orderBySize[T comparable](lhs Set[T], rhs Set[T]) (Set[T], Set[T]) {
-	if len(lhs.set) <= len(rhs.set) {
-		return lhs, rhs
-	}
-
-	return rhs, lhs
 }
 
 func (s Set[T]) GetRawSet() map[T]struct{} {
@@ -129,8 +129,15 @@ func (s Set[T]) Intersection(other Set[T]) Set[T] {
 }
 
 func (s Set[T]) IntersectWith(other Set[T]) {
-	smaller, _ := orderBySize(s, other)
-	sizeHint := len(smaller.set) / 2
+	smaller, bigger := orderBySize(s, other)
+	var sizeHint int
+
+	if len(s.set) == len(smaller.set) {
+		sizeHint = len(smaller.set) / 2
+	} else {
+		sizeHint = len(bigger.set) - len(smaller.set) / 2
+	}
+
 	marked := make([]T, 0, sizeHint)
 
 	for val := range s.set {
@@ -145,8 +152,15 @@ func (s Set[T]) IntersectWith(other Set[T]) {
 }
 
 func (s Set[T]) Except(other Set[T]) Set[T] {
-	smaller, _ := orderBySize(s, other)
-	sizeHint := len(smaller.set) / 2
+	smaller, bigger := orderBySize(s, other)
+	var sizeHint int
+
+	if len(s.set) == len(smaller.set) {
+		sizeHint = len(smaller.set) / 2
+	} else {
+		sizeHint = len(bigger.set) - len(smaller.set) / 2
+	}
+
 	except := New[T](sizeHint)
 
 	for val := range s.set {
@@ -174,6 +188,38 @@ func (s Set[T]) ExceptWith(other Set[T]) {
 	}
 }
 
+func (s Set[T]) SymmetricExcept(other Set[T]) Set[T] {
+	_, bigger := orderBySize(s, other)
+	sizeHint := len(bigger.set)
+	symmetricExcept := New[T](sizeHint)
+
+	for val := range s.set {
+		if !other.Contains(val) {
+			symmetricExcept.set[val] = struct{}{}
+		}
+	}
+
+	for val := range other.set {
+		if !s.Contains(val) {
+			symmetricExcept.set[val] = struct{}{}
+		}
+	}
+
+	return symmetricExcept
+}
+
+func (s Set[T]) SymmetricExceptWith(other Set[T]) {
+	marked := s.Intersection(other)
+
+	for val := range other.set {
+		s.set[val] = struct{}{}
+	}
+
+	for val := range marked.set {
+		delete(s.set, val)
+	}
+}
+
 func (s Set[T]) Overlaps(other Set[T]) bool {
 	smaller, bigger := orderBySize(s, other)
 
@@ -184,6 +230,20 @@ func (s Set[T]) Overlaps(other Set[T]) bool {
 	}
 
 	return false
+}
+
+func (s Set[T]) SetEquals(other Set[T]) bool {
+	if len(s.set) != len(other.set) {
+		return false
+	}
+
+	for val := range s.set {
+		if !other.Contains(val) {
+			return false
+		}
+	}
+
+	return true
 }
 
 func (s Set[T]) IsSubsetOf(other Set[T]) bool {
@@ -206,6 +266,16 @@ func (s Set[T]) IsSupersetOf(other Set[T]) bool {
 
 func (s Set[T]) IsProperSupersetOf(other Set[T]) bool {
 	return other.IsProperSubsetOf(s)
+}
+
+func (s Set[T]) ToSlice() []T {
+	slice := make([]T, 0, len(s.set))
+
+	for val := range s.set {
+		slice = append(slice, val)
+	}
+
+	return slice
 }
 
 func (s Set[T]) String() string {
