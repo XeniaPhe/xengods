@@ -45,9 +45,40 @@ func TestSetConstructors(t *testing.T) {
 		t.Errorf("Expected size 5, got %d instead", set.Size())
 	}
 
-	containsAll := set.Contains(1) && set.Contains(2) && set.Contains(3) && set.Contains(4) && set.Contains(5)
+	if !set.ContainsAll(1, 2, 3, 4, 5) {
+		t.Error("Set does not contain all the elements it should have contained")
+	}
 
-	if !containsAll {
+	hashmap := make(map[int32]int32)
+	hashmap[0] = 0
+	hashmap[1] = 1
+	hashmap[2] = 2
+	hashmap[3] = 2
+
+	keySet := FromKeys(hashmap)
+	valueSet := FromValues(hashmap)
+
+	if !keySet.IsInitialized() {
+		t.Error("Expected true, got false")
+	}
+
+	if !valueSet.IsInitialized() {
+		t.Error("Expected true, got false")
+	}
+
+	if keySet.Size() != 4 {
+		t.Errorf("Expected size 4, got %d instead", keySet.Size())
+	}
+
+	if valueSet.Size() != 3 {
+		t.Errorf("Expected size 3, got %d instead", valueSet.Size())
+	}
+
+	if !keySet.ContainsAll(0, 1, 2, 3) {
+		t.Error("Set does not contain all the elements it should have contained")
+	}
+
+	if !valueSet.ContainsAll(0, 1, 2) {
 		t.Error("Set does not contain all the elements it should have contained")
 	}
 
@@ -61,9 +92,7 @@ func TestSetConstructors(t *testing.T) {
 		t.Errorf("Expected size 5, got %d instead", clone.Size())
 	}
 
-	containsAll = clone.Contains(1) && clone.Contains(2) && clone.Contains(3) && clone.Contains(4) && clone.Contains(5)
-
-	if !containsAll {
+	if !clone.ContainsAll(1, 2, 3, 4, 5) {
 		t.Error("Set does not contain all the elements it should have contained")
 	}
 
@@ -74,7 +103,7 @@ func TestSetConstructors(t *testing.T) {
 	}
 }
 
-func TestSetAddRemovePopOneContainsSize(t *testing.T) {
+func TestSetAddRemovePopOneContainsSizeIsEmpty(t *testing.T) {
 	s := New[int]()
 	s.Add(5)
 
@@ -91,12 +120,24 @@ func TestSetAddRemovePopOneContainsSize(t *testing.T) {
 
 	s = New[int]()
 
+	if !s.IsEmpty() {
+		t.Error("The newly initialized set is not empty")
+	}
+
 	s.Add(1)
 	s.Add(2)
 	s.Add(3)
 
 	if s.Size() != 3 {
 		t.Errorf("Expected size 3, got %d instead", s.Size())
+	}
+
+	if !s.ContainsAll(1, 2, 3) {
+		t.Error("Set does not contain all the elements it should have contained")
+	}
+
+	if !s.ContainsSome(7, 8, 9, 10, 11, 3) {
+		t.Error("Set does not contain some of the elemenets it should have contained")
 	}
 
 	clone := s.Clone()

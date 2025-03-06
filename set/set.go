@@ -29,22 +29,24 @@ func Of[T comparable](values ...T) Set[T] {
 	return set
 }
 
-func orderBySize[T comparable](lhs Set[T], rhs Set[T]) (Set[T], Set[T]) {
-	if len(lhs.set) <= len(rhs.set) {
-		return lhs, rhs
+func FromKeys[K comparable, V any](hashmap map[K]V) Set[K] {
+	set := New[K](len(hashmap))
+
+	for key := range hashmap {
+		set.set[key] = struct{}{}
 	}
 
-	return rhs, lhs
+	return set
 }
 
-func (s Set[T]) IsInitialized() bool {
-	return s.set != nil
-}
+func FromValues[K comparable, V comparable](hashmap map[K]V) Set[V] {
+	set := New[V](len(hashmap))
 
-func (s *Set[T]) InitializeIfNot() {
-	if s.set == nil {
-		s.set = make(map[T]struct{})
+	for _, val := range hashmap {
+		set.set[val] = struct{}{}
 	}
+
+	return set
 }
 
 func (s *Set[T]) Clear() {
@@ -59,6 +61,16 @@ func (s Set[T]) Clone() Set[T] {
 	}
 
 	return clone
+}
+
+func (s Set[T]) IsInitialized() bool {
+	return s.set != nil
+}
+
+func (s *Set[T]) InitializeIfNot() {
+	if s.set == nil {
+		s.set = make(map[T]struct{})
+	}
 }
 
 func (s Set[T]) GetRawSet() map[T]struct{} {
@@ -88,8 +100,32 @@ func (s Set[T]) Contains(value T) bool {
 	return found
 }
 
+func (s Set[T]) ContainsSome(values ...T) bool {
+	for _, val := range values {
+		if _, found := s.set[val]; found {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (s Set[T]) ContainsAll(values ...T) bool {
+	for _, val := range values {
+		if _, found := s.set[val]; !found {
+			return false
+		}
+	}
+
+	return true
+}
+
 func (s Set[T]) Size() int {
 	return len(s.set)
+}
+
+func (s Set[T]) IsEmpty() bool {
+	return len(s.set) == 0
 }
 
 func (s Set[T]) Union(other Set[T]) Set[T] {
@@ -209,14 +245,12 @@ func (s Set[T]) SymmetricExcept(other Set[T]) Set[T] {
 }
 
 func (s Set[T]) SymmetricExceptWith(other Set[T]) {
-	marked := s.Intersection(other)
-
 	for val := range other.set {
-		s.set[val] = struct{}{}
-	}
-
-	for val := range marked.set {
-		delete(s.set, val)
+		if _, exists := s.set[val]; exists {
+			delete(s.set, val)
+		} else {
+			s.set[val] = struct{}{}
+		}
 	}
 }
 
@@ -294,4 +328,22 @@ func (s Set[T]) String() string {
 
 	builder.WriteString("}")
 	return builder.String()
+}
+
+func orderBySize[T comparable](lhs Set[T], rhs Set[T]) (Set[T], Set[T]) {
+	if len(lhs.set) <= len(rhs.set) {
+		return lhs, rhs
+	}
+
+	return rhs, lhs
+}
+
+func compare[T comparable](lhs Set[T], rhs Set[T]) int {
+	if len(lhs.set) < len(rhs.set) {
+		return 1
+	} else if len(lhs.set) == len(rhs.set) {
+		return 0
+	}
+
+	return -1
 }
