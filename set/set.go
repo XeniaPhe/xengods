@@ -337,13 +337,3 @@ func orderBySize[T comparable](lhs Set[T], rhs Set[T]) (Set[T], Set[T]) {
 
 	return rhs, lhs
 }
-
-func compare[T comparable](lhs Set[T], rhs Set[T]) int {
-	if len(lhs.set) < len(rhs.set) {
-		return 1
-	} else if len(lhs.set) == len(rhs.set) {
-		return 0
-	}
-
-	return -1
-}
