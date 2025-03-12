@@ -5,6 +5,7 @@
 *.dylib
 *.test
 *.out
+*.code-workspace
 go.work
 go.work.sum
 .env
