@@ -2,6 +2,7 @@ package set
 
 import (
 	"fmt"
+	"maps"
 	"strings"
 )
 
@@ -49,18 +50,8 @@ func FromValues[K comparable, V comparable](hashmap map[K]V) Set[V] {
 	return set
 }
 
-func (s *Set[T]) Clear() {
-	s.set = make(map[T]struct{})
-}
-
 func (s Set[T]) Clone() Set[T] {
-	clone := New[T](len(s.set))
-
-	for val := range s.set {
-		clone.set[val] = struct{}{}
-	}
-
-	return clone
+	return Set[T]{maps.Clone(s.set)}
 }
 
 func (s Set[T]) IsInitialized() bool {
@@ -71,6 +62,18 @@ func (s *Set[T]) InitializeIfNot() {
 	if s.set == nil {
 		s.set = make(map[T]struct{})
 	}
+}
+
+func (s *Set[T]) Clear() {
+	s.set = make(map[T]struct{})
+}
+
+func (s Set[T]) Size() int {
+	return len(s.set)
+}
+
+func (s Set[T]) IsEmpty() bool {
+	return len(s.set) == 0
 }
 
 func (s Set[T]) GetRawSet() map[T]struct{} {
@@ -118,14 +121,6 @@ func (s Set[T]) ContainsAll(values ...T) bool {
 	}
 
 	return true
-}
-
-func (s Set[T]) Size() int {
-	return len(s.set)
-}
-
-func (s Set[T]) IsEmpty() bool {
-	return len(s.set) == 0
 }
 
 func (s Set[T]) Union(other Set[T]) Set[T] {
@@ -318,12 +313,12 @@ func (s Set[T]) String() string {
 	first := true
 
 	for val := range s.set {
-		if first {
-			first = false
+		if !first {
 			builder.WriteString(", ")
 		}
 		
 		builder.WriteString(fmt.Sprintf("%v", val))
+		first = false
 	}
 
 	builder.WriteString("}")

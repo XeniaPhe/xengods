@@ -95,6 +95,13 @@ func TestSetConstructors(t *testing.T) {
 	if !clone.ContainsAll(1, 2, 3, 4, 5) {
 		t.Error("Set does not contain all the elements it should have contained")
 	}
+}
+
+func TestSetClear(t *testing.T) {
+	set := New[int]()
+	set.Add(5)
+	set.Add(6)
+	set.Add(7)
 
 	set.Clear()
 
@@ -517,5 +524,14 @@ func TestSetToSlice(t *testing.T) {
 
 	if set.Size() != 0 {
 		t.Errorf("Expected size 0, got %d instead", set.Size())
+	}
+}
+
+func TestSetString(t *testing.T) {
+	set := Of(1, 2)
+	str := set.String()
+
+	if str != "Set{1, 2}" && str != "Set{2, 1}" {
+		t.Errorf("Expected 'Set{1, 2}' or 'Set{2, 1}', got '%s' instead", str)
 	}
 }

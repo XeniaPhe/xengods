@@ -54,13 +54,13 @@ func TestStackPushPopPeek(t *testing.T) {
 	_, err := s.Peek()
 
 	if err == nil {
-		t.Errorf("Expected an error, got nothing")
+		t.Error("Expected an error, got nothing")
 	}
 
 	_, err = s.Pop()
 
 	if err == nil {
-		t.Errorf("Expected an error, got nothing")
+		t.Error("Expected an error, got nothing")
 	}
 	
 	s.Push(1)
@@ -125,10 +125,15 @@ func TestStackClear(t *testing.T) {
 		t.Fatalf("Expected size 100, got %d instead", s.Size())
 	}
 
+	capacity := s.Capacity()
 	s.Clear()
 
 	if s.Size() != 0 {
 		t.Errorf("Expected size 0, got %d instead", s.Size())
+	}
+
+	if s.Capacity() != capacity {
+		t.Errorf("Expected capacity %d, got %d instead", capacity, s.Capacity())
 	}
 }
 

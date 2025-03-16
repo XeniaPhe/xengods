@@ -3,6 +3,7 @@ package stack
 import (
 	"errors"
 	"fmt"
+	"slices"
 	"strings"
 )
 
@@ -35,32 +36,36 @@ func Of[T any](values ...T) Stack[T] {
 	return stack
 }
 
+func (s Stack[T]) Clone() Stack[T] {
+	return slices.Clone(s)
+}
+
 func (s *Stack[T]) Push(value T) {
 	*s = append(*s, value)
 }
 
 func (s *Stack[T]) Pop() (T, error) {
-	l := len(*s)
+	size := len(*s)
 
-	if l == 0 {
+	if size == 0 {
 		var zero T
 		return zero, emptyStackError
 	}
 
-	res := (*s)[l-1]
-	*s = (*s)[:l-1]
+	res := (*s)[size-1]
+	*s = (*s)[:size-1]
 	return res, nil
 }
 
 func (s Stack[T]) Peek() (T, error) {
-	l := len(s)
+	size := len(s)
 
-	if l == 0 {
+	if size == 0 {
 		var zero T
 		return zero, emptyStackError
 	}
 
-	res := s[l-1]
+	res := s[size-1]
 	return res, nil
 }
 
